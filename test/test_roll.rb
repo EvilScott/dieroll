@@ -7,7 +7,8 @@ class TestRoll < Test::Unit::TestCase
 
   def setup
     @test = Dieroll::Roll.new('1d6+2')
-    @twodice = Dieroll::Roll.new('1d6+1d4-2')
+    @two_dice = Dieroll::Roll.new('1d6+1d4-2')
+    #@_4d6_drop_low = Dieroll::Roll.new('4d6/l')
   end
 
   def teardown
@@ -33,6 +34,14 @@ class TestRoll < Test::Unit::TestCase
     assert !roll.empty?
     assert_equal 3, roll.count
     assert_equal roll.first, roll[1].total-roll[2].total+5
+
+    roll = Dieroll::Roll.string('4d6\l')
+    assert !roll.empty?
+    assert_equal 2, roll.count
+    assert_equal roll.first, roll[1].total
+    dice = roll[1].dice
+    dice.sort!.shift
+    assert_equal dice.inject(0){|sum, x| sum+x}, roll[1].total
   end
   
   def test_roll_init
@@ -41,10 +50,10 @@ class TestRoll < Test::Unit::TestCase
     assert_equal [[1,6],[2]], @test.sets
     assert_equal ['+','+'], @test.plusminus
 
-    assert_equal '1d6+1d4-2', @twodice.string
-    assert @twodice.results.empty?
-    assert_equal [[1,6],[1,4],[2]], @twodice.sets
-    assert_equal ['+','+','-'], @twodice.plusminus
+    assert_equal '1d6+1d4-2', @two_dice.string
+    assert @two_dice.results.empty?
+    assert_equal [[1,6],[1,4],[2]], @two_dice.sets
+    assert_equal ['+','+','-'], @two_dice.plusminus
   end
 
   def test_obj_roll
